@@ -1,0 +1,65 @@
+enabled: true
+replicaCount: 1
+
+initChownData:
+  enabled: false
+
+podSecurityContext:
+  fsGroup: 472
+
+adminUser: admin
+adminPassword: "7x!L8sasdasd#q9Z$vM"
+
+persistence:
+  enabled: true
+  storageClassName: ""
+  size: 5Gi
+
+resources:
+  requests:
+    memory: 256Mi
+    cpu: 100m
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  hosts:
+    - monitor.seferon
+  path: /
+  pathType: Prefix
+  tls:
+    - secretName: grafana-tls
+      hosts:
+        - monitor.seferon
+
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        access: proxy
+        url: http://prometheus-server.prometheus.svc.cluster.local:80
+        isDefault: true
+
+      - name: Loki
+        type: loki
+        access: proxy
+        url: http://loki.loki.svc.cluster.local:3100
+        isDefault: false
+        jsonData:
+          disableResourceCalls: true
+          httpHeaderName1: X-Scope-OrgID
+        secureJsonData:
+          httpHeaderValue1: "1"
+
+      - name: Tempo
+        type: tempo
+        access: proxy
+        url: http://tempo.tempo.svc.cluster.local:3200
+        isDefault: false
+        jsonData:
+          grpcURL: tempo.tempo.svc.cluster.local:4317
+

@@ -1,0 +1,69 @@
+grafana:
+  enabled: true
+  adminUser: admin
+  adminPassword: prom-operator
+  defaultDashboardsEnabled: true
+
+  persistence:
+    enabled: true
+    accessModes:
+      - ReadWriteOnce
+    size: 10Gi
+
+  serviceMonitor:
+    selfMonitor: true
+
+  ingress:
+    enabled: true
+    hosts:
+      - monitoring.seferon
+    tls:
+      - secretName: grafana-tls
+        hosts:
+          - monitoring.seferon
+    annotations:
+      nginx.ingress.kubernetes.io/secure: "true"
+    path: /
+    pathType: ImplementationSpecific
+
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+        - name: Prometheus
+          type: prometheus
+          access: proxy
+          url: http://prometheus-operated.monitoring.svc.cluster.local:9090
+          isDefault: true
+
+nodeExporter:
+  enabled: true
+
+prometheus:
+  enabled: true
+
+  service:
+    type: NodePort
+    nodePort: 30090
+
+  persistence:
+    enabled: true
+    accessModes:
+      - ReadWriteOnce
+    size: 50Gi
+
+alertmanager:
+  enabled: true
+
+  persistence:
+    enabled: true
+    accessModes:
+      - ReadWriteOnce
+    size: 5Gi
+
+prometheusOperator:
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: true
+    serviceMonitorNamespaceSelectorNilUsesHelmValues: true
+
+defaultDashboardsEnabled: true

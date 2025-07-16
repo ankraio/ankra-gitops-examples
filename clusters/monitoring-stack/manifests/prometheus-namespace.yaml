@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: prometheus
+  labels:
+    name: prometheus
+    app: monitoring
+    kubernetes.io/metadata.name: prometheus

@@ -1,0 +1,29 @@
+alertmanager:
+  enabled: false
+pushgateway:
+  enabled: false
+server:
+  updateStrategy:
+    type: OnDelete
+  persistentVolume:
+    enabled: true
+    storageClass: ""
+    accessModes:
+      - ReadWriteOnce
+    size: 10Gi
+  retention: 15d
+  service:
+    type: NodePort
+    nodePort: 30090
+  resources:
+    requests:
+      memory: 512Mi
+      cpu: 250m
+kubeStateMetrics:
+  enabled: true
+  hostNetwork: false
+  hostPort: {}
+nodeExporter:
+  enabled: true
+  hostNetwork: false
+  hostPort: {}

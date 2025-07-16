@@ -1,0 +1,33 @@
+replicaCount: 1
+
+ingester:
+  replicaCount: 1
+
+distributor:
+  replicaCount: 1
+
+queryFrontEnd:
+  replicaCount: 1
+
+storage:
+  trace:
+    backend: local
+    local:
+      path: /var/tempo/traces
+    wal:
+      enabled: true
+      path: /var/tempo/wal
+    search_enabled: true
+
+compactor:
+  compaction:
+    block_retention: 168h
+    max_block_bytes: 1073741824
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 1Gi

@@ -1,0 +1,93 @@
+apiVersion: v1
+kind: ImportCluster
+metadata:
+  name: imported-cluster
+  description: Your imported cluster
+spec:
+  git_repository:
+    provider: github
+    credential_name: <github credential id>
+    branch: <main>
+    repository: <username>/<gitops repository>
+  stacks:
+  - name: monitoring
+    manifests:
+    - name: tempo-ns
+      from_file: manifests/tempo-ns.yaml
+    - name: grafana-ns
+      from_file: manifests/grafana-ns.yaml
+    - name: alloy-ns
+      from_file: manifests/alloy-ns.yaml
+    - name: loki-ns
+      from_file: manifests/loki-ns.yaml
+    - name: fiuentbit-ns
+      from_file: manifests/fiuentbit-ns.yaml
+    - name: prometheus-namespace
+      from_file: manifests/prometheus-namespace.yaml
+    addons:
+    - name: alloy
+      chart_name: alloy
+      chart_version: 1.1.2
+      repository_url: https://grafana.github.io/helm-charts
+      namespace: alloy
+      configuration_type: standalone
+      configuration:
+        from_file: add-ons/alloy/values.yaml
+      parents:
+      - name: alloy-ns
+        kind: manifest
+    - name: loki
+      chart_name: loki
+      chart_version: 6.31.0
+      repository_url: https://grafana.github.io/helm-charts
+      namespace: loki
+      configuration_type: standalone
+      configuration:
+        from_file: add-ons/loki/values.yaml
+      parents:
+      - name: loki-ns
+        kind: manifest
+    - name: fluent-bit-1
+      chart_name: fluent-bit
+      chart_version: 2.6.0
+      repository_url: https://grafana.github.io/helm-charts
+      namespace: fluent-bit
+      configuration_type: standalone
+      configuration:
+        from_file: add-ons/fluent-bit-1/values.yaml
+      parents:
+      - name: fiuentbit-ns
+        kind: manifest
+    - name: tempo
+      chart_name: tempo
+      chart_version: 1.23.2
+      repository_url: https://grafana.github.io/helm-charts
+      namespace: tempo
+      configuration_type: standalone
+      configuration:
+        from_file: add-ons/tempo/values.yaml
+      parents:
+      - name: tempo-ns
+        kind: manifest
+    - name: grafana
+      chart_name: grafana
+      chart_version: 9.2.10
+      repository_url: https://grafana.github.io/helm-charts
+      namespace: grafana
+      configuration_type: standalone
+      configuration:
+        from_file: add-ons/grafana/values.yaml
+      parents:
+      - name: grafana-ns
+        kind: manifest
+    - name: prometheus
+      chart_name: prometheus
+      chart_version: 27.24.0
+      repository_url: https://prometheus-community.github.io/helm-charts
+      namespace: prometheus
+      configuration_type: standalone
+      configuration:
+        from_file: add-ons/prometheus/values.yaml
+      parents:
+      - name: prometheus-namespace
+        kind: manifest
