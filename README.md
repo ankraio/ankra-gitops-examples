@@ -117,7 +117,7 @@ export ANKRA_API_TOKEN=your-token-here
 
 # Select cluster and deploy
 ankra select cluster
-ankra apply stack monitoring
+ankra apply -f cluster.yaml
 ```
 
 ## Configuration Highlights
